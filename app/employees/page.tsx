@@ -7,26 +7,53 @@ import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
-import { EmployeeApi } from "@/lib/api/employee";
+import { useEffect, useState } from "react";
 
-import data from "./data.json";
+import { EmployeeApi } from "@/lib/api/employee";
+import type {
+  Employee,
+  EmployeePagination,
+} from "@/lib/types/employee";
 
 export default function Page() {
+  const [employees, setEmployees] = useState<Employee[]>([]);
+
+  const [pagination, setPagination] =
+    useState<EmployeePagination | null>(null);
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadEmployees = async () => {
+    const fetchEmployees = async () => {
       try {
+        setLoading(true);
+
         const result = await EmployeeApi.getAll();
 
-        console.log(result);
+        if (result.success) {
+          setEmployees(
+            result.data.data
+          );
+
+          setPagination(
+            result.data
+          );
+        }
+
       } catch (error) {
         console.error(error);
+
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadEmployees();
+    fetchEmployees();
+
   }, []);
+
+  console.log(employees);
+  console.log(pagination);
 
   return (
     <SidebarProvider
@@ -38,22 +65,41 @@ export default function Page() {
       }
     >
       <AppSidebar variant="inset" />
+
       <SidebarInset>
         <SiteHeader />
+
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+
               <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
-                <Button variant="outline">Add New Employee</Button>
+
+                <Button variant="outline">
+                  Add New Employee
+                </Button>
+
                 <Field orientation="horizontal">
-                  <Input type="search" placeholder="Search..." />
-                  <Button>Search Employee</Button>
+                  <Input
+                    type="search"
+                    placeholder="Search..."
+                  />
+
+                  <Button>
+                    Search Employee
+                  </Button>
                 </Field>
+
               </div>
-              <DataTable data={data} />
+
+              <DataTable
+                data={employees}
+              />
+
             </div>
           </div>
         </div>
+
       </SidebarInset>
     </SidebarProvider>
   );
