@@ -11,9 +11,9 @@ import type { Employee, EmployeePagination } from "@/lib/types/employee";
 
 export default function Page() {
   const [employees, setEmployees] = useState<Employee[]>([]);
-
   const [pagination, setPagination] = useState<EmployeePagination | null>(null);
-
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,7 +21,10 @@ export default function Page() {
       try {
         setLoading(true);
 
-        const result = await EmployeeApi.getAll();
+        const result = await EmployeeApi.getAll({
+          page,
+          pageSize,
+        });
 
         if (result.success) {
           setEmployees(result.data.data);
@@ -36,7 +39,7 @@ export default function Page() {
     };
 
     fetchEmployees();
-  }, []);
+  }, [page, pageSize]);
 
   console.log(employees);
   console.log(pagination);
@@ -58,7 +61,14 @@ export default function Page() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <DataTable data={employees} />
+              <DataTable
+                data={employees}
+                pagination={pagination}
+                page={page}
+                pageSize={pageSize}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+              />
             </div>
           </div>
         </div>

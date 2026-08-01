@@ -53,7 +53,6 @@ import {
   ChevronsRightIcon,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import type { Employee } from "@/lib/types/employee";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -62,6 +61,7 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
+import type { Employee, EmployeePagination } from "@/lib/types/employee";
 
 const columns: ColumnDef<Employee>[] = [
   {
@@ -114,7 +114,21 @@ function DraggableRow({ row }: { row: Row<Employee> }) {
   );
 }
 
-export function DataTable({ data: initialData }: { data: Employee[] }) {
+export function DataTable({
+  data: initialData,
+  pagination,
+  page,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+}: {
+  data: Employee[];
+  pagination: EmployeePagination | null;
+  page: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
+}) {
   const [data, setData] = React.useState(() => initialData);
 
   React.useEffect(() => {
@@ -129,10 +143,6 @@ export function DataTable({ data: initialData }: { data: Employee[] }) {
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   const sortableId = React.useId();
 
   const sensors = useSensors(
@@ -154,18 +164,17 @@ export function DataTable({ data: initialData }: { data: Employee[] }) {
       columnVisibility,
       rowSelection,
       columnFilters,
-      pagination,
     },
     getRowId: (row) => row.id.toString(),
     enableRowSelection: true,
+
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
+
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
@@ -261,9 +270,10 @@ export function DataTable({ data: initialData }: { data: Employee[] }) {
                 Rows per page
               </Label>
               <Select
-                value={`${table.getState().pagination.pageSize}`}
+                value={`${pageSize}`}
                 onValueChange={(value) => {
-                  table.setPageSize(Number(value));
+                  onPageSizeChange(Number(value));
+                  onPageChange(1);
                 }}
                 items={[10, 20, 30, 40, 50].map((pageSize) => ({
                   label: `${pageSize}`,
@@ -287,15 +297,14 @@ export function DataTable({ data: initialData }: { data: Employee[] }) {
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+              Page {page} of {pagination?.totalPages ?? 1}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => onPageChange(1)}
+                disabled={page === 1}
               >
                 <span className="sr-only">Go to first page</span>
                 <ChevronsLeftIcon />
@@ -304,8 +313,12 @@ export function DataTable({ data: initialData }: { data: Employee[] }) {
                 variant="outline"
                 className="size-8"
                 size="icon"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => {
+                  if (page > 1) {
+                    onPageChange(page - 1);
+                  }
+                }}
+                disabled={page === 1}
               >
                 <span className="sr-only">Go to previous page</span>
                 <ChevronLeftIcon />
@@ -314,8 +327,12 @@ export function DataTable({ data: initialData }: { data: Employee[] }) {
                 variant="outline"
                 className="size-8"
                 size="icon"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
+                onClick={() => {
+                  if (pagination && page < pagination.totalPages) {
+                    onPageChange(page + 1);
+                  }
+                }}
+                disabled={pagination ? page === pagination.totalPages : true}
               >
                 <span className="sr-only">Go to next page</span>
                 <ChevronRightIcon />
@@ -324,8 +341,12 @@ export function DataTable({ data: initialData }: { data: Employee[] }) {
                 variant="outline"
                 className="hidden size-8 lg:flex"
                 size="icon"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
+                onClick={() => {
+                  if (pagination) {
+                    onPageChange(pagination.totalPages);
+                  }
+                }}
+                disabled={pagination ? page === pagination.totalPages : true}
               >
                 <span className="sr-only">Go to last page</span>
                 <ChevronsRightIcon />

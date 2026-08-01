@@ -4,11 +4,27 @@ import type { ApiResponse } from "@/lib/types/api";
 import type { EmployeePagination } from "@/lib/types/employee";
 
 export const EmployeeApi = {
-getAll: async (): Promise<ApiResponse<EmployeePagination>> => {
-    const response = await api.get<ApiResponse<EmployeePagination>>("/Employee");
+  getAll: async ({
+    page,
+    pageSize,
+  }: {
+    page: number;
+    pageSize: number;
+  }): Promise<ApiResponse<EmployeePagination>> => {
+
+    const response =
+      await api.get<ApiResponse<EmployeePagination>>(
+        "/Employee",
+        {
+          params: {
+            page,
+            pageSize,
+          },
+        }
+      );
 
     return response.data;
-},
+  },
 
   getById: async (id: number) => {
     const response = await api.get(`/Employee/${id}`);
