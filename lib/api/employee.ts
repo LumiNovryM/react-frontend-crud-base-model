@@ -7,9 +7,11 @@ export const EmployeeApi = {
   getAll: async ({
     page,
     pageSize,
+    search,
   }: {
     page: number;
     pageSize: number;
+    search?: string;
   }): Promise<ApiResponse<EmployeePagination>> => {
 
     const response =
@@ -19,6 +21,7 @@ export const EmployeeApi = {
           params: {
             page,
             pageSize,
+            search,
           },
         }
       );

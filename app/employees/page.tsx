@@ -15,6 +15,8 @@ export default function Page() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -24,11 +26,12 @@ export default function Page() {
         const result = await EmployeeApi.getAll({
           page,
           pageSize,
+          search,
         });
 
         if (result.success) {
           setEmployees(result.data.data);
-
+          console.log("SEARCH RESULT", result.data.data);
           setPagination(result.data);
         }
       } catch (error) {
@@ -39,10 +42,12 @@ export default function Page() {
     };
 
     fetchEmployees();
-  }, [page, pageSize]);
+  }, [page, pageSize, search]);
 
-  console.log(employees);
-  console.log(pagination);
+  const handleSearch = () => {
+    setPage(1);
+    setSearch(searchInput);
+  };
 
   return (
     <SidebarProvider
@@ -68,6 +73,9 @@ export default function Page() {
                 pageSize={pageSize}
                 onPageChange={setPage}
                 onPageSizeChange={setPageSize}
+                searchInput={searchInput}
+                onSearchChange={setSearchInput}
+                onSearch={handleSearch}
               />
             </div>
           </div>

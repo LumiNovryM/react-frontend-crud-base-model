@@ -119,6 +119,9 @@ export function DataTable({
   pageSize,
   onPageChange,
   onPageSizeChange,
+  searchInput,
+  onSearchChange,
+  onSearch,
 }: {
   data: Employee[];
   pagination: EmployeePagination | null;
@@ -126,6 +129,9 @@ export function DataTable({
   pageSize: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
+  searchInput: string;
+  onSearchChange: (value: string) => void;
+  onSearch: () => void;
 }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -188,9 +194,14 @@ export function DataTable({
         <div className="flex justify-between items-center gap-4">
           <Button variant="outline">Add New Employee</Button>
           <Field orientation="horizontal">
-            <Input type="search" placeholder="Search..." />
+            <Input
+              type="search"
+              placeholder="Search..."
+              value={searchInput}
+              onChange={(e) => onSearchChange(e.target.value)}
+            />
 
-            <Button>Search Employee</Button>
+            <Button onClick={onSearch}>Search Employee</Button>
           </Field>
         </div>
         <div className="overflow-hidden rounded-lg border">
