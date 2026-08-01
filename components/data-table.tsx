@@ -14,7 +14,6 @@ import {
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
-  arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
@@ -26,7 +25,6 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
@@ -129,12 +127,6 @@ export function DataTable({
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
 }) {
-  const [data, setData] = React.useState(() => initialData);
-
-  React.useEffect(() => {
-    setData(initialData);
-  }, [initialData]);
-
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -152,12 +144,12 @@ export function DataTable({
   );
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
-    () => data?.map(({ id }) => id) || [],
-    [data],
+    () => initialData?.map(({ id }) => id) || [],
+    [initialData],
   );
 
   const table = useReactTable({
-    data,
+    data: initialData,
     columns,
     state: {
       sorting,
@@ -181,14 +173,7 @@ export function DataTable({
   });
 
   function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (active && over && active.id !== over.id) {
-      setData((data) => {
-        const oldIndex = dataIds.indexOf(active.id);
-        const newIndex = dataIds.indexOf(over.id);
-        return arrayMove(data, oldIndex, newIndex);
-      });
-    }
+    return;
   }
 
   return (
@@ -212,7 +197,6 @@ export function DataTable({
           <DndContext
             collisionDetection={closestCenter}
             modifiers={[restrictToVerticalAxis]}
-            onDragEnd={handleDragEnd}
             sensors={sensors}
             id={sortableId}
           >
