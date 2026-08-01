@@ -1,3 +1,5 @@
+"use client";
+
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -5,10 +7,27 @@ import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
+import { EmployeeApi } from "@/lib/api/employee";
 
 import data from "./data.json";
 
 export default function Page() {
+
+  useEffect(() => {
+    const loadEmployees = async () => {
+      try {
+        const result = await EmployeeApi.getAll();
+
+        console.log(result);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadEmployees();
+  }, []);
+
   return (
     <SidebarProvider
       style={
