@@ -21,8 +21,9 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetFooter,
 } from "@/components/ui/sheet";
+import { formatDate } from "@/lib/date";
+
 
 import type { Employee } from "@/lib/types/employee";
 
@@ -110,7 +111,7 @@ export function EmployeeActions({ employee }: Props) {
               <Input
                 id="sheet-demo-hiredate"
                 disabled
-                defaultValue={employee.hireDate}
+                defaultValue={formatDate(employee.hireDate)}
               />
             </div>
           </div>

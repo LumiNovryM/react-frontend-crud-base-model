@@ -60,6 +60,7 @@ import {
 } from "@/components/ui/select";
 import type { Employee, EmployeePagination } from "@/lib/types/employee";
 import { EmployeeActions } from "@/components/employee/employee-action";
+import { formatDate } from "@/lib/date";
 
 const columns: ColumnDef<Employee>[] = [
   {
@@ -85,6 +86,7 @@ const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: "hireDate",
     header: "Hire Date",
+     cell: ({ row }) => formatDate(row.original.hireDate),
   },
   {
     id: "actions",
