@@ -12,11 +12,13 @@ import type { Employee, EmployeePagination } from "@/lib/types/employee";
 export default function Page() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [pagination, setPagination] = useState<EmployeePagination | null>(null);
+
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
   const [loading, setLoading] = useState(true);
+
   const [searchInput, setSearchInput] = useState("");
-  const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
@@ -30,11 +32,6 @@ export default function Page() {
   }, [searchInput]);
 
   useEffect(() => {
-    setPage(1);
-    setSearch(debouncedSearch);
-  }, [debouncedSearch]);
-
-  useEffect(() => {
     const fetchEmployees = async () => {
       try {
         setLoading(true);
@@ -42,12 +39,11 @@ export default function Page() {
         const result = await EmployeeApi.getAll({
           page,
           pageSize,
-          search,
+          search: debouncedSearch,
         });
 
         if (result.success) {
           setEmployees(result.data.data);
-          console.log("SEARCH RESULT", result.data.data);
           setPagination(result.data);
         }
       } catch (error) {
@@ -58,11 +54,14 @@ export default function Page() {
     };
 
     fetchEmployees();
-  }, [page, pageSize, search]);
+  }, [page, pageSize, debouncedSearch]);
 
-  const handleSearch = (value: string) => {
-    setPage(1);
-    setSearch(value);
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+
+    if (page !== 1) {
+      setPage(1);
+    }
   };
 
   return (
@@ -90,7 +89,7 @@ export default function Page() {
                 onPageChange={setPage}
                 onPageSizeChange={setPageSize}
                 searchInput={searchInput}
-                onSearchChange={setSearchInput}
+                onSearchChange={handleSearchChange}
               />
             </div>
           </div>
