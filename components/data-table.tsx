@@ -59,6 +59,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import type { Employee, EmployeePagination } from "@/lib/types/employee";
+import { EmployeeActions } from "@/components/employee/employee-action";
 
 const columns: ColumnDef<Employee>[] = [
   {
@@ -84,6 +85,10 @@ const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: "hireDate",
     header: "Hire Date",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => <EmployeeActions employee={row.original} />,
   },
 ];
 
@@ -174,7 +179,6 @@ export function DataTable({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
-
 
   return (
     <Tabs
