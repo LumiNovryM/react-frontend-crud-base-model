@@ -9,7 +9,6 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
   type UniqueIdentifier,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
@@ -176,9 +175,6 @@ export function DataTable({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
-  function handleDragEnd(event: DragEndEvent) {
-    return;
-  }
 
   return (
     <Tabs
