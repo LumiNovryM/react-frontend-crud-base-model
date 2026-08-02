@@ -24,6 +24,15 @@ import {
 } from "@/components/ui/sheet";
 import { formatDate } from "@/lib/date";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import type { Employee } from "@/lib/types/employee";
 
@@ -34,6 +43,7 @@ interface Props {
 export function EmployeeActions({ employee }: Props) {
   const [detailOpen, setDetailOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   return (
     <>
@@ -60,11 +70,16 @@ export function EmployeeActions({ employee }: Props) {
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setDeleteOpen(true)}
+          >
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Detail Sheet */}
+      {/* Detail */}
       <Sheet open={detailOpen} onOpenChange={setDetailOpen}>
         <SheetContent className="flex flex-col">
           <SheetHeader>
@@ -131,7 +146,7 @@ export function EmployeeActions({ employee }: Props) {
         </SheetContent>
       </Sheet>
 
-      {/* Edit Sheet */}
+      {/* Edit */}
       <Sheet open={editOpen} onOpenChange={setEditOpen}>
         <SheetContent className="flex flex-col">
           <SheetHeader>
@@ -186,6 +201,40 @@ export function EmployeeActions({ employee }: Props) {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      {/* Delete */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Employee</DialogTitle>
+
+            <DialogDescription>
+              Are you sure you want to delete{" "}
+              <strong>
+                {employee.firstName} {employee.lastName}
+              </strong>
+              ?
+              <br />
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline">Cancel</Button>} />
+
+            <Button
+              variant="destructive"
+              onClick={() => {
+                console.log("DELETE EMPLOYEE ID:", employee.id);
+
+                setDeleteOpen(false);
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
