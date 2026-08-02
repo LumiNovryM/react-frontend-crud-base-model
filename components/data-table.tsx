@@ -211,6 +211,7 @@ export function DataTable({
   };
 
   const [jobTitles, setJobTitles] = useState<JobTitle[]>([]);
+  const [creating, setCreating] = useState(false);
 
   const fetchJobTitles = async (departmentId: number) => {
     try {
@@ -235,6 +236,8 @@ export function DataTable({
   };
 
   const handleCreateEmployee = async () => {
+    setCreating(true);
+
     try {
       const payload: CreateEmployeePayload = {
         nik: employeeForm.nik,
@@ -254,25 +257,35 @@ export function DataTable({
 
       if (result.success) {
         onCreated();
+
         setAddEmployeeOpen(false);
+
         setEmployeeForm(initialEmployeeForm);
+
         setJobTitles([]);
+
         toast.add({
+          type: "success",
           title: "Employee Created",
           description: result.message,
         });
       } else {
         toast.add({
+          type: "error",
           title: "Create Employee Failed",
           description: result.message,
         });
       }
     } catch (error) {
       console.error(error);
+
       toast.add({
+        type: "error",
         title: "Unexpected Error",
         description: "Unable to create employee. Please try again.",
       });
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -708,11 +721,12 @@ export function DataTable({
 
           <SheetFooter>
             <Button
+              disabled={creating}
               onClick={() => {
                 handleCreateEmployee();
               }}
             >
-              Create Employee
+              {creating ? "Saving..." : "Save"}
             </Button>
 
             <SheetClose render={<Button variant="outline">Cancel</Button>} />
