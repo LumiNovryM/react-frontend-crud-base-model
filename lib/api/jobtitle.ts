@@ -7,9 +7,8 @@ export const JobTitleApi = {
   getByDepartment: async (
     departmentId: number
   ): Promise<ApiResponse<JobTitle[]>> => {
-
     const response = await api.get<ApiResponse<JobTitle[]>>(
-      `/Employee/${departmentId}`
+      `/JobTitle?departmentId=${departmentId}`
     );
 
     return response.data;

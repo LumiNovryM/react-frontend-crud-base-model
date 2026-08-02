@@ -72,6 +72,10 @@ import {
 } from "@/components/ui/sheet";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { Department } from "@/lib/types/department";
+import { JobTitleApi } from "@/lib/api/jobtitle";
+import type { JobTitle } from "@/lib/types/jobtitle";
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
 const columns: ColumnDef<Employee>[] = [
   {
@@ -172,14 +176,33 @@ export function DataTable({
 
   const [addEmployeeOpen, setAddEmployeeOpen] = React.useState(false);
   const [employeeForm, setEmployeeForm] = React.useState({
+    nik: "",
     firstName: "",
     lastName: "",
-    email: "",
     gender: "",
+    placeOfBirth: "",
+    dateOfBirth: "",
+    email: "",
+    phone: "",
+    address: "",
     departmentId: "",
     jobTitleId: "",
     hireDate: "",
   });
+
+  const [jobTitles, setJobTitles] = useState<JobTitle[]>([]);
+
+  const fetchJobTitles = async (departmentId: number) => {
+    try {
+      const result = await JobTitleApi.getByDepartment(departmentId);
+
+      if (result.success) {
+        setJobTitles(result.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleEmployeeChange = (
     field: keyof typeof employeeForm,
@@ -393,6 +416,7 @@ export function DataTable({
 
           <div className="flex-1 overflow-y-auto px-4 py-4">
             <div className="grid gap-6">
+              {/* First Name */}
               <div className="grid gap-3">
                 <Label>First Name</Label>
 
@@ -405,6 +429,7 @@ export function DataTable({
                 />
               </div>
 
+              {/* Last Name */}
               <div className="grid gap-3">
                 <Label>Last Name</Label>
 
@@ -417,26 +442,30 @@ export function DataTable({
                 />
               </div>
 
+              {/* NIK */}
               <div className="grid gap-3">
-                <Label>Email</Label>
+                <Label>NIK</Label>
 
                 <Input
-                  placeholder="Enter email"
-                  value={employeeForm.email}
-                  onChange={(e) =>
-                    handleEmployeeChange("email", e.target.value)
-                  }
+                  placeholder="Enter NIK"
+                  value={employeeForm.nik}
+                  onChange={(e) => handleEmployeeChange("nik", e.target.value)}
                 />
               </div>
 
+              {/* Department */}
               <div className="grid gap-3">
                 <Label>Department</Label>
 
                 <Select
                   value={employeeForm.departmentId}
-                  onValueChange={(value) =>
-                    handleEmployeeChange("departmentId", value ?? "")
-                  }
+                  onValueChange={(value) => {
+                    handleEmployeeChange("departmentId", value ?? "");
+
+                    handleEmployeeChange("jobTitleId", "");
+
+                    fetchJobTitles(Number(value));
+                  }}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Department">
@@ -463,32 +492,42 @@ export function DataTable({
                 </Select>
               </div>
 
+              {/* JobTitle */}
               <div className="grid gap-3">
                 <Label>Job Title</Label>
 
                 <Select
+                  disabled={!employeeForm.departmentId}
                   value={employeeForm.jobTitleId}
                   onValueChange={(value) =>
                     handleEmployeeChange("jobTitleId", value ?? "")
                   }
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select job title" />
+                    <SelectValue placeholder="Select Job Title">
+                      {
+                        jobTitles.find(
+                          (jobTitle) =>
+                            jobTitle.id.toString() === employeeForm.jobTitleId,
+                        )?.jobTitleName
+                      }
+                    </SelectValue>
                   </SelectTrigger>
 
                   <SelectContent>
-                    {/* {jobTitles.map((jobTitle) => (
+                    {jobTitles.map((jobTitle) => (
                       <SelectItem
                         key={jobTitle.id}
                         value={jobTitle.id.toString()}
                       >
                         {jobTitle.jobTitleName}
                       </SelectItem>
-                    ))} */}
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* Gender */}
               <div className="grid gap-3">
                 <Label> Gender</Label>
 
@@ -513,6 +552,33 @@ export function DataTable({
                 </RadioGroup>
               </div>
 
+              {/* Place Of Birth */}
+              <div className="grid gap-3">
+                <Label>Place of Birth</Label>
+
+                <Input
+                  placeholder="Enter place of birth"
+                  value={employeeForm.placeOfBirth}
+                  onChange={(e) =>
+                    handleEmployeeChange("placeOfBirth", e.target.value)
+                  }
+                />
+              </div>
+
+              {/* Date Of Birth */}
+              <div className="grid gap-3">
+                <Label>Date of Birth</Label>
+
+                <Input
+                  type="date"
+                  value={employeeForm.dateOfBirth}
+                  onChange={(e) =>
+                    handleEmployeeChange("dateOfBirth", e.target.value)
+                  }
+                />
+              </div>
+
+              {/* Hire Date */}
               <div className="grid gap-3">
                 <Label>Hire Date</Label>
 
@@ -521,6 +587,46 @@ export function DataTable({
                   value={employeeForm.hireDate}
                   onChange={(e) =>
                     handleEmployeeChange("hireDate", e.target.value)
+                  }
+                />
+              </div>
+
+              {/* Address */}
+              <div className="grid gap-3">
+                <Label>Address</Label>
+
+                <Textarea
+                  placeholder="Enter address"
+                  value={employeeForm.address}
+                  onChange={(e) =>
+                    handleEmployeeChange("address", e.target.value)
+                  }
+                />
+              </div>
+
+              {/* Phone */}
+              <div className="grid gap-3">
+                <Label>Phone</Label>
+
+                <Input
+                  placeholder="Enter phone number"
+                  value={employeeForm.phone}
+                  onChange={(e) =>
+                    handleEmployeeChange("phone", e.target.value)
+                  }
+                />
+              </div>
+
+              {/* Email */}
+              <div className="grid gap-3">
+                <Label>Email</Label>
+
+                <Input
+                  type="email"
+                  placeholder="Enter email"
+                  value={employeeForm.email}
+                  onChange={(e) =>
+                    handleEmployeeChange("email", e.target.value)
                   }
                 />
               </div>
