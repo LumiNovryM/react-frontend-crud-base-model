@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 
 import { EmployeeApi } from "@/lib/api/employee";
 import type { Employee, EmployeePagination } from "@/lib/types/employee";
+import { DepartmentApi } from "@/lib/api/department";
+import type { Department } from "@/lib/types/department";
 
 export default function Page() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -20,6 +22,8 @@ export default function Page() {
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const [departments, setDepartments] = useState<Department[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -56,6 +60,23 @@ export default function Page() {
     fetchEmployees();
   }, [page, pageSize, debouncedSearch]);
 
+  useEffect(() => {
+  const fetchDepartments = async () => {
+    try {
+      const result = await DepartmentApi.getAll();
+
+      if (result.success) {
+        setDepartments(result.data);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchDepartments();
+}, []);
+
   const handleSearchChange = (value: string) => {
     setSearchInput(value);
 
@@ -90,6 +111,7 @@ export default function Page() {
                 onPageSizeChange={setPageSize}
                 searchInput={searchInput}
                 onSearchChange={handleSearchChange}
+                departments={departments}
               />
             </div>
           </div>

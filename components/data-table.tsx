@@ -71,6 +71,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import type { Department } from "@/lib/types/department";
 
 const columns: ColumnDef<Employee>[] = [
   {
@@ -137,6 +138,7 @@ export function DataTable({
   onPageSizeChange,
   searchInput,
   onSearchChange,
+  departments,
 }: {
   data: Employee[];
   pagination: EmployeePagination | null;
@@ -146,6 +148,7 @@ export function DataTable({
   onPageSizeChange: (pageSize: number) => void;
   searchInput: string;
   onSearchChange: (value: string) => void;
+  departments: Department[];
 }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -431,23 +434,31 @@ export function DataTable({
 
                 <Select
                   value={employeeForm.departmentId}
-                  // onValueChange={(value) =>
-                  //   handleEmployeeChange("departmentId", value)
-                  // }
+                  onValueChange={(value) =>
+                    handleEmployeeChange("departmentId", value ?? "")
+                  }
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select department" />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Department">
+                      {
+                        departments.find(
+                          (department) =>
+                            department.id.toString() ===
+                            employeeForm.departmentId,
+                        )?.departmentName
+                      }
+                    </SelectValue>
                   </SelectTrigger>
 
                   <SelectContent>
-                    {/* {departments.map((department) => (
+                    {departments.map((department) => (
                       <SelectItem
                         key={department.id}
                         value={department.id.toString()}
                       >
                         {department.departmentName}
                       </SelectItem>
-                    ))} */}
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -456,12 +467,12 @@ export function DataTable({
                 <Label>Job Title</Label>
 
                 <Select
-                  // value={employeeForm.jobTitleId}
-                  // onValueChange={(value) =>
-                  //   handleEmployeeChange("jobTitleId", value)
-                  // }
+                  value={employeeForm.jobTitleId}
+                  onValueChange={(value) =>
+                    handleEmployeeChange("jobTitleId", value ?? "")
+                  }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select job title" />
                   </SelectTrigger>
 
