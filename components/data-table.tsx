@@ -61,6 +61,15 @@ import {
 import type { Employee, EmployeePagination } from "@/lib/types/employee";
 import { EmployeeActions } from "@/components/employee/employee-action";
 import { formatDate } from "@/lib/date";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
 
 const columns: ColumnDef<Employee>[] = [
   {
@@ -86,7 +95,7 @@ const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: "hireDate",
     header: "Hire Date",
-     cell: ({ row }) => formatDate(row.original.hireDate),
+    cell: ({ row }) => formatDate(row.original.hireDate),
   },
   {
     id: "actions",
@@ -145,6 +154,8 @@ export function DataTable({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
+  const [addEmployeeOpen, setAddEmployeeOpen] = React.useState(false);
+
   const sortableId = React.useId();
 
   const sensors = useSensors(
@@ -192,7 +203,9 @@ export function DataTable({
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="flex justify-between items-center gap-4">
-          <Button variant="outline">Add New Employee</Button>
+          <Button variant="outline" onClick={() => setAddEmployeeOpen(true)}>
+            Add New Employee
+          </Button>
           <Field orientation="horizontal">
             <Input
               type="search"
@@ -348,6 +361,61 @@ export function DataTable({
           </div>
         </div>
       </TabsContent>
+      <Sheet open={addEmployeeOpen} onOpenChange={setAddEmployeeOpen}>
+        <SheetContent className="flex flex-col">
+          <SheetHeader>
+            <SheetTitle>Add New Employee</SheetTitle>
+
+            <SheetDescription>Create a new employee profile.</SheetDescription>
+          </SheetHeader>
+
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            <div className="grid gap-6">
+              <div className="grid gap-3">
+                <Label>First Name</Label>
+
+                <Input placeholder="Enter first name" />
+              </div>
+
+              <div className="grid gap-3">
+                <Label>Last Name</Label>
+
+                <Input placeholder="Enter last name" />
+              </div>
+
+              <div className="grid gap-3">
+                <Label>Email</Label>
+
+                <Input placeholder="Enter email" />
+              </div>
+
+              <div className="grid gap-3">
+                <Label>Department</Label>
+
+                <Input placeholder="Enter department" />
+              </div>
+
+              <div className="grid gap-3">
+                <Label>Job Title</Label>
+
+                <Input placeholder="Enter job title" />
+              </div>
+
+              <div className="grid gap-3">
+                <Label>Hire Date</Label>
+
+                <Input type="date" />
+              </div>
+            </div>
+          </div>
+
+          <SheetFooter>
+            <Button>Create Employee</Button>
+
+            <SheetClose render={<Button variant="outline">Cancel</Button>} />
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </Tabs>
   );
 }
