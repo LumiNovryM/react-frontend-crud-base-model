@@ -24,7 +24,7 @@ export default function Page() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchInput);
-    }, 500);
+    }, 300);
 
     return () => {
       clearTimeout(timer);
