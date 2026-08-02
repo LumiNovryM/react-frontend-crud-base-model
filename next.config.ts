@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://agilis-technical-test-lumi.runasp.net/api/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

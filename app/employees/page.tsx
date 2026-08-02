@@ -17,6 +17,22 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchInput]);
+
+  useEffect(() => {
+    setPage(1);
+    setSearch(debouncedSearch);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -44,9 +60,9 @@ export default function Page() {
     fetchEmployees();
   }, [page, pageSize, search]);
 
-  const handleSearch = () => {
+  const handleSearch = (value: string) => {
     setPage(1);
-    setSearch(searchInput);
+    setSearch(value);
   };
 
   return (
@@ -75,7 +91,6 @@ export default function Page() {
                 onPageSizeChange={setPageSize}
                 searchInput={searchInput}
                 onSearchChange={setSearchInput}
-                onSearch={handleSearch}
               />
             </div>
           </div>

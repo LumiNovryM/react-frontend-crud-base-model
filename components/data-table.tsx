@@ -121,7 +121,6 @@ export function DataTable({
   onPageSizeChange,
   searchInput,
   onSearchChange,
-  onSearch,
 }: {
   data: Employee[];
   pagination: EmployeePagination | null;
@@ -131,7 +130,6 @@ export function DataTable({
   onPageSizeChange: (pageSize: number) => void;
   searchInput: string;
   onSearchChange: (value: string) => void;
-  onSearch: () => void;
 }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -200,8 +198,6 @@ export function DataTable({
               value={searchInput}
               onChange={(e) => onSearchChange(e.target.value)}
             />
-
-            <Button onClick={onSearch}>Search Employee</Button>
           </Field>
         </div>
         <div className="overflow-hidden rounded-lg border">
