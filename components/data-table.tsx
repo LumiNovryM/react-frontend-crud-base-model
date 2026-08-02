@@ -70,6 +70,7 @@ import {
   SheetFooter,
   SheetClose,
 } from "@/components/ui/sheet";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const columns: ColumnDef<Employee>[] = [
   {
@@ -153,9 +154,6 @@ export function DataTable({
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
-  const [addEmployeeOpen, setAddEmployeeOpen] = React.useState(false);
-
   const sortableId = React.useId();
 
   const sensors = useSensors(
@@ -168,6 +166,27 @@ export function DataTable({
     () => initialData?.map(({ id }) => id) || [],
     [initialData],
   );
+
+  const [addEmployeeOpen, setAddEmployeeOpen] = React.useState(false);
+  const [employeeForm, setEmployeeForm] = React.useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    gender: "",
+    departmentId: "",
+    jobTitleId: "",
+    hireDate: "",
+  });
+
+  const handleEmployeeChange = (
+    field: keyof typeof employeeForm,
+    value: string,
+  ) => {
+    setEmployeeForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   const table = useReactTable({
     data: initialData,
@@ -374,43 +393,137 @@ export function DataTable({
               <div className="grid gap-3">
                 <Label>First Name</Label>
 
-                <Input placeholder="Enter first name" />
+                <Input
+                  placeholder="Enter first name"
+                  value={employeeForm.firstName}
+                  onChange={(e) =>
+                    handleEmployeeChange("firstName", e.target.value)
+                  }
+                />
               </div>
 
               <div className="grid gap-3">
                 <Label>Last Name</Label>
 
-                <Input placeholder="Enter last name" />
+                <Input
+                  placeholder="Enter last name"
+                  value={employeeForm.lastName}
+                  onChange={(e) =>
+                    handleEmployeeChange("lastName", e.target.value)
+                  }
+                />
               </div>
 
               <div className="grid gap-3">
                 <Label>Email</Label>
 
-                <Input placeholder="Enter email" />
+                <Input
+                  placeholder="Enter email"
+                  value={employeeForm.email}
+                  onChange={(e) =>
+                    handleEmployeeChange("email", e.target.value)
+                  }
+                />
               </div>
 
               <div className="grid gap-3">
                 <Label>Department</Label>
 
-                <Input placeholder="Enter department" />
+                <Select
+                  value={employeeForm.departmentId}
+                  // onValueChange={(value) =>
+                  //   handleEmployeeChange("departmentId", value)
+                  // }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {/* {departments.map((department) => (
+                      <SelectItem
+                        key={department.id}
+                        value={department.id.toString()}
+                      >
+                        {department.departmentName}
+                      </SelectItem>
+                    ))} */}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid gap-3">
                 <Label>Job Title</Label>
 
-                <Input placeholder="Enter job title" />
+                <Select
+                  // value={employeeForm.jobTitleId}
+                  // onValueChange={(value) =>
+                  //   handleEmployeeChange("jobTitleId", value)
+                  // }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select job title" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {/* {jobTitles.map((jobTitle) => (
+                      <SelectItem
+                        key={jobTitle.id}
+                        value={jobTitle.id.toString()}
+                      >
+                        {jobTitle.jobTitleName}
+                      </SelectItem>
+                    ))} */}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-3">
+                <Label> Gender</Label>
+
+                <RadioGroup
+                  value={employeeForm.gender}
+                  onValueChange={(value) =>
+                    setEmployeeForm((prev) => ({
+                      ...prev,
+                      gender: value,
+                    }))
+                  }
+                >
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="M" id="male" />
+                    <Label htmlFor="male">Male</Label>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="F" id="female" />
+                    <Label htmlFor="female">Female</Label>
+                  </div>
+                </RadioGroup>
               </div>
 
               <div className="grid gap-3">
                 <Label>Hire Date</Label>
 
-                <Input type="date" />
+                <Input
+                  type="date"
+                  value={employeeForm.hireDate}
+                  onChange={(e) =>
+                    handleEmployeeChange("hireDate", e.target.value)
+                  }
+                />
               </div>
             </div>
           </div>
 
           <SheetFooter>
-            <Button>Create Employee</Button>
+            <Button
+              onClick={() => {
+                console.log(employeeForm);
+              }}
+            >
+              Create Employee
+            </Button>
 
             <SheetClose render={<Button variant="outline">Cancel</Button>} />
           </SheetFooter>
