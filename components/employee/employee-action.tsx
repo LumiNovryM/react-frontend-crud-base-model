@@ -33,6 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/toast";
 
 import type { Employee, EmployeeDetail } from "@/lib/types/employee";
 
@@ -40,9 +41,10 @@ import { EmployeeApi } from "@/lib/api/employee";
 
 interface Props {
   employee: Employee;
+  onDeleted: () => void;
 }
 
-export function EmployeeActions({ employee }: Props) {
+export function EmployeeActions({ employee, onDeleted }: Props) {
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailEmployee, setDetailEmployee] = useState<EmployeeDetail | null>(
     null,
@@ -69,6 +71,38 @@ export function EmployeeActions({ employee }: Props) {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const result = await EmployeeApi.delete(employee.id);
+
+      if (result.success) {
+        toast.add({
+          type: "success",
+          title: "Employee Deleted",
+          description: result.message,
+        });
+
+        setDeleteOpen(false);
+
+        onDeleted();
+      } else {
+        toast.add({
+          type: "error",
+          title: "Delete Failed",
+          description: result.message,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+
+      toast.add({
+        type: "error",
+        title: "Unexpected Error",
+        description: "Unable to delete employee.",
+      });
+    }
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -76,10 +110,12 @@ export function EmployeeActions({ employee }: Props) {
           <IconDotsVertical size={18} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          {/* Detail Button */}
           <DropdownMenuItem onClick={handleDetail} disabled={loadingDetail}>
             {loadingDetail ? "Loading..." : "Detail"}
           </DropdownMenuItem>
 
+          {/* Update Button */}
           <DropdownMenuItem
             onClick={() => {
               setEditOpen(true);
@@ -90,6 +126,7 @@ export function EmployeeActions({ employee }: Props) {
 
           <DropdownMenuSeparator />
 
+          {/* Delete Button */}
           <DropdownMenuItem
             variant="destructive"
             onClick={() => setDeleteOpen(true)}
@@ -269,8 +306,7 @@ export function EmployeeActions({ employee }: Props) {
             <Button
               variant="destructive"
               onClick={() => {
-                console.log("DELETE EMPLOYEE ID:", employee.id);
-
+                handleDelete();
                 setDeleteOpen(false);
               }}
             >

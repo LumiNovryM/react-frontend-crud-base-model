@@ -80,37 +80,44 @@ import { EmployeeApi } from "@/lib/api/employee";
 import type { CreateEmployeePayload } from "@/lib/types/employee";
 import { toast } from "@/components/ui/toast";
 
-const columns: ColumnDef<Employee>[] = [
-  {
-    accessorKey: "firstName",
-    header: "First Name",
-  },
-  {
-    accessorKey: "lastName",
-    header: "Last Name",
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-  },
-  {
-    accessorKey: "department",
-    header: "Department",
-  },
-  {
-    accessorKey: "jobTitle",
-    header: "Job Title",
-  },
-  {
-    accessorKey: "hireDate",
-    header: "Hire Date",
-    cell: ({ row }) => formatDate(row.original.hireDate),
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => <EmployeeActions employee={row.original} />,
-  },
-];
+function getColumns(onDeleted: () => void): ColumnDef<Employee>[] {
+  return [
+    {
+      accessorKey: "firstName",
+      header: "First Name",
+    },
+    {
+      accessorKey: "lastName",
+      header: "Last Name",
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+    },
+    {
+      accessorKey: "department",
+      header: "Department",
+    },
+    {
+      accessorKey: "jobTitle",
+      header: "Job Title",
+    },
+    {
+      accessorKey: "hireDate",
+      header: "Hire Date",
+      cell: ({ row }) => formatDate(row.original.hireDate),
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <EmployeeActions
+          employee={row.original}
+          onDeleted={onDeleted}
+        />
+      ),
+    },
+  ];
+}
 
 function DraggableRow({ row }: { row: Row<Employee> }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
@@ -147,6 +154,7 @@ export function DataTable({
   onSearchChange,
   departments,
   onCreated,
+  onDeleted,
 }: {
   data: Employee[];
   pagination: EmployeePagination | null;
@@ -158,6 +166,7 @@ export function DataTable({
   onSearchChange: (value: string) => void;
   departments: Department[];
   onCreated: () => void;
+  onDeleted: () => void;
 }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -423,6 +432,8 @@ export function DataTable({
       setCreating(false);
     }
   };
+
+  const columns = getColumns(onDeleted);
 
   const table = useReactTable({
     data: initialData,
