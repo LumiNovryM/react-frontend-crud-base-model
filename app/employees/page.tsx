@@ -118,6 +118,9 @@ export default function Page() {
                 onDeleted={() => {
                   setRefreshKey((prev) => prev + 1);
                 }}
+                onUpdated={() => {
+                  setRefreshKey((prev) => prev + 1);
+                }}
               />
             </div>
           </div>

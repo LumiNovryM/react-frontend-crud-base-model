@@ -80,7 +80,11 @@ import { EmployeeApi } from "@/lib/api/employee";
 import type { CreateEmployeePayload } from "@/lib/types/employee";
 import { toast } from "@/components/ui/toast";
 
-function getColumns(onDeleted: () => void): ColumnDef<Employee>[] {
+function getColumns(
+  onDeleted: () => void,
+  departments: Department[],
+  onUpdated: () => void,
+): ColumnDef<Employee>[] {
   return [
     {
       accessorKey: "firstName",
@@ -113,6 +117,8 @@ function getColumns(onDeleted: () => void): ColumnDef<Employee>[] {
         <EmployeeActions
           employee={row.original}
           onDeleted={onDeleted}
+          departments={departments}
+          onUpdated={onUpdated}
         />
       ),
     },
@@ -155,6 +161,7 @@ export function DataTable({
   departments,
   onCreated,
   onDeleted,
+  onUpdated,
 }: {
   data: Employee[];
   pagination: EmployeePagination | null;
@@ -167,6 +174,7 @@ export function DataTable({
   departments: Department[];
   onCreated: () => void;
   onDeleted: () => void;
+  onUpdated: () => void;
 }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -433,7 +441,7 @@ export function DataTable({
     }
   };
 
-  const columns = getColumns(onDeleted);
+  const columns = getColumns(onDeleted, departments, onUpdated);
 
   const table = useReactTable({
     data: initialData,
