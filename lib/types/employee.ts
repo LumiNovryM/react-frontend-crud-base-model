@@ -35,3 +35,17 @@ export interface CreateEmployeePayload {
   jobTitleId: number;
   hireDate: string;
 }
+
+export interface EmployeeDetail {
+  nik: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  gender: string;
+  placeOfBirth: string;
+  dateOfBirth: string;
+  email: string;
+  phone: string;
+  jobTitleId: number;
+  hireDate: string;
+}

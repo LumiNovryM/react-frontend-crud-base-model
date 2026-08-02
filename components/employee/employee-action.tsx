@@ -34,7 +34,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import type { Employee } from "@/lib/types/employee";
+import type { Employee, EmployeeDetail } from "@/lib/types/employee";
+
+import { EmployeeApi } from "@/lib/api/employee";
 
 interface Props {
   employee: Employee;
@@ -42,8 +44,30 @@ interface Props {
 
 export function EmployeeActions({ employee }: Props) {
   const [detailOpen, setDetailOpen] = useState(false);
+  const [detailEmployee, setDetailEmployee] = useState<EmployeeDetail | null>(
+    null,
+  );
+
+  const [loadingDetail, setLoadingDetail] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const handleDetail = async () => {
+    try {
+      setLoadingDetail(true);
+
+      const result = await EmployeeApi.getById(employee.id);
+
+      if (result.success) {
+        setDetailEmployee(result.data);
+        setDetailOpen(true);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
 
   return (
     <>
@@ -52,12 +76,8 @@ export function EmployeeActions({ employee }: Props) {
           <IconDotsVertical size={18} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() => {
-              setDetailOpen(true);
-            }}
-          >
-            Detail
+          <DropdownMenuItem onClick={handleDetail} disabled={loadingDetail}>
+            {loadingDetail ? "Loading..." : "Detail"}
           </DropdownMenuItem>
 
           <DropdownMenuItem
@@ -89,54 +109,78 @@ export function EmployeeActions({ employee }: Props) {
             </SheetDescription>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-4 py-4">
-            <div className="grid gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="sheet-demo-name">First Name</Label>
-                <Input
-                  id="sheet-demo-name"
-                  disabled
-                  defaultValue={employee.firstName}
-                />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="sheet-demo-username">Last Name</Label>
-                <Input
-                  id="sheet-demo-username"
-                  disabled
-                  defaultValue={employee.lastName}
-                />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="sheet-demo-email">Email</Label>
-                <Input
-                  id="sheet-demo-email"
-                  disabled
-                  defaultValue={employee.email}
-                />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="sheet-demo-department">Department</Label>
-                <Input
-                  id="sheet-demo-department"
-                  disabled
-                  defaultValue={employee.department}
-                />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="sheet-demo-jobtitle">Job Title</Label>
-                <Input
-                  id="sheet-demo-jobtitle"
-                  disabled
-                  defaultValue={employee.jobTitle}
-                />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="sheet-demo-hiredate">Hire Date</Label>
-                <Input
-                  id="sheet-demo-hiredate"
-                  disabled
-                  defaultValue={formatDate(employee.hireDate)}
-                />
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              <div className="grid gap-6">
+                <div className="grid gap-3">
+                  <Label>NIK</Label>
+                  <Input disabled value={detailEmployee?.nik ?? ""} />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label>First Name</Label>
+                  <Input disabled value={detailEmployee?.firstName ?? ""} />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label>Last Name</Label>
+                  <Input disabled value={detailEmployee?.lastName ?? ""} />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label>Gender</Label>
+                  <Input
+                    disabled
+                    value={
+                      detailEmployee?.gender === "F"
+                        ? "Female"
+                        : detailEmployee?.gender === "M"
+                          ? "Male"
+                          : ""
+                    }
+                  />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label>Place Of Birth</Label>
+                  <Input disabled value={detailEmployee?.placeOfBirth ?? ""} />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label>Date Of Birth</Label>
+                  <Input
+                    disabled
+                    value={
+                      detailEmployee
+                        ? formatDate(detailEmployee.dateOfBirth)
+                        : ""
+                    }
+                  />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label>Email</Label>
+                  <Input disabled value={detailEmployee?.email ?? ""} />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label>Phone</Label>
+                  <Input disabled value={detailEmployee?.phone ?? ""} />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label>Address</Label>
+                  <Input disabled value={detailEmployee?.address ?? ""} />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label>Hire Date</Label>
+                  <Input
+                    disabled
+                    value={
+                      detailEmployee ? formatDate(detailEmployee.hireDate) : ""
+                    }
+                  />
+                </div>
               </div>
             </div>
           </div>
