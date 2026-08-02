@@ -235,7 +235,142 @@ export function DataTable({
     }));
   };
 
+  const validateEmployeeForm = () => {
+    if (!employeeForm.firstName.trim()) {
+      toast.add({
+        type: "error",
+        title: "Validation Error",
+        description: "First Name is required.",
+      });
+
+      return false;
+    }
+
+    if (!employeeForm.lastName.trim()) {
+      toast.add({
+        type: "error",
+        title: "Validation Error",
+        description: "Last Name is required.",
+      });
+
+      return false;
+    }
+
+    if (!employeeForm.nik.trim()) {
+      if (employeeForm.nik.length < 6) {
+        toast.add({
+          type: "error",
+          title: "Validation Error",
+          description: "NIK is too short.",
+        });
+
+        return false;
+      }
+    }
+
+    if (!employeeForm.departmentId) {
+      toast.add({
+        type: "error",
+        title: "Validation Error",
+        description: "Please select a department.",
+      });
+
+      return false;
+    }
+
+    if (!employeeForm.jobTitleId) {
+      toast.add({
+        type: "error",
+        title: "Validation Error",
+        description: "Please select a job title.",
+      });
+
+      return false;
+    }
+
+    if (!employeeForm.gender) {
+      toast.add({
+        type: "error",
+        title: "Validation Error",
+        description: "Please select a gender.",
+      });
+
+      return false;
+    }
+
+    if (!employeeForm.placeOfBirth.trim()) {
+      toast.add({
+        type: "error",
+        title: "Validation Error",
+        description: "Place of Birth is required.",
+      });
+
+      return false;
+    }
+
+    if (!employeeForm.dateOfBirth) {
+      toast.add({
+        type: "error",
+        title: "Validation Error",
+        description: "Date of Birth is required.",
+      });
+
+      return false;
+    }
+
+    if (!employeeForm.address.trim()) {
+      toast.add({
+        type: "error",
+        title: "Validation Error",
+        description: "Address is required.",
+      });
+
+      return false;
+    }
+
+    if (!employeeForm.phone.trim()) {
+      if (employeeForm.phone.length < 10) {
+        toast.add({
+          type: "error",
+          title: "Validation Error",
+          description: "Phone number is invalid.",
+        });
+
+        return false;
+      }
+    }
+
+    if (!employeeForm.email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(employeeForm.email)) {
+        toast.add({
+          type: "error",
+          title: "Validation Error",
+          description: "Invalid email format.",
+        });
+
+        return false;
+      }
+    }
+
+    if (!employeeForm.hireDate) {
+      toast.add({
+        type: "error",
+        title: "Validation Error",
+        description: "Hire Date is required.",
+      });
+
+      return false;
+    }
+
+    return true;
+  };
+
   const handleCreateEmployee = async () => {
+    if (!validateEmployeeForm()) {
+      return;
+    }
     setCreating(true);
 
     try {
