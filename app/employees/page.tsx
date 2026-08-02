@@ -5,7 +5,6 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DataTable } from "@/components/data-table";
 import { useEffect, useState } from "react";
-
 import { EmployeeApi } from "@/lib/api/employee";
 import type { Employee, EmployeePagination } from "@/lib/types/employee";
 import { DepartmentApi } from "@/lib/api/department";
@@ -24,6 +23,8 @@ export default function Page() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [departments, setDepartments] = useState<Department[]>([]);
+
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -57,25 +58,24 @@ export default function Page() {
       }
     };
 
-    fetchEmployees();
-  }, [page, pageSize, debouncedSearch]);
+    void fetchEmployees();
+  }, [page, pageSize, debouncedSearch, refreshKey]);
 
   useEffect(() => {
-  const fetchDepartments = async () => {
-    try {
-      const result = await DepartmentApi.getAll();
+    const fetchDepartments = async () => {
+      try {
+        const result = await DepartmentApi.getAll();
 
-      if (result.success) {
-        setDepartments(result.data);
+        if (result.success) {
+          setDepartments(result.data);
+        }
+      } catch (error) {
+        console.error(error);
       }
+    };
 
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  fetchDepartments();
-}, []);
+    fetchDepartments();
+  }, []);
 
   const handleSearchChange = (value: string) => {
     setSearchInput(value);
@@ -112,6 +112,9 @@ export default function Page() {
                 searchInput={searchInput}
                 onSearchChange={handleSearchChange}
                 departments={departments}
+                onCreated={() => {
+                  setRefreshKey((prev) => prev + 1);
+                }}
               />
             </div>
           </div>

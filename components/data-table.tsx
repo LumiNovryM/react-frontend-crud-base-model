@@ -76,6 +76,9 @@ import { JobTitleApi } from "@/lib/api/jobtitle";
 import type { JobTitle } from "@/lib/types/jobtitle";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { EmployeeApi } from "@/lib/api/employee";
+import type { CreateEmployeePayload } from "@/lib/types/employee";
+import { toast } from "@/components/ui/toast";
 
 const columns: ColumnDef<Employee>[] = [
   {
@@ -143,6 +146,7 @@ export function DataTable({
   searchInput,
   onSearchChange,
   departments,
+  onCreated,
 }: {
   data: Employee[];
   pagination: EmployeePagination | null;
@@ -153,6 +157,7 @@ export function DataTable({
   searchInput: string;
   onSearchChange: (value: string) => void;
   departments: Department[];
+  onCreated: () => void;
 }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -190,6 +195,21 @@ export function DataTable({
     hireDate: "",
   });
 
+  const initialEmployeeForm = {
+    nik: "",
+    firstName: "",
+    lastName: "",
+    gender: "",
+    placeOfBirth: "",
+    dateOfBirth: "",
+    email: "",
+    phone: "",
+    address: "",
+    departmentId: "",
+    jobTitleId: "",
+    hireDate: "",
+  };
+
   const [jobTitles, setJobTitles] = useState<JobTitle[]>([]);
 
   const fetchJobTitles = async (departmentId: number) => {
@@ -212,6 +232,48 @@ export function DataTable({
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleCreateEmployee = async () => {
+    try {
+      const payload: CreateEmployeePayload = {
+        nik: employeeForm.nik,
+        firstName: employeeForm.firstName,
+        lastName: employeeForm.lastName,
+        address: employeeForm.address,
+        gender: employeeForm.gender,
+        placeOfBirth: employeeForm.placeOfBirth,
+        dateOfBirth: new Date(employeeForm.dateOfBirth).toISOString(),
+        email: employeeForm.email,
+        phone: employeeForm.phone,
+        jobTitleId: Number(employeeForm.jobTitleId),
+        hireDate: new Date(employeeForm.hireDate).toISOString(),
+      };
+
+      const result = await EmployeeApi.create(payload);
+
+      if (result.success) {
+        onCreated();
+        setAddEmployeeOpen(false);
+        setEmployeeForm(initialEmployeeForm);
+        setJobTitles([]);
+        toast.add({
+          title: "Employee Created",
+          description: result.message,
+        });
+      } else {
+        toast.add({
+          title: "Create Employee Failed",
+          description: result.message,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.add({
+        title: "Unexpected Error",
+        description: "Unable to create employee. Please try again.",
+      });
+    }
   };
 
   const table = useReactTable({
@@ -248,6 +310,17 @@ export function DataTable({
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="flex justify-between items-center gap-4">
+          <Button
+            onClick={() =>
+              toast.add({
+                type: "success",
+                title: "Hi From Lumi",
+                description: "This is a toast notification from Lumi.",
+              })
+            }
+          >
+            Hola Button :)
+          </Button>
           <Button variant="outline" onClick={() => setAddEmployeeOpen(true)}>
             Add New Employee
           </Button>
@@ -636,7 +709,7 @@ export function DataTable({
           <SheetFooter>
             <Button
               onClick={() => {
-                console.log(employeeForm);
+                handleCreateEmployee();
               }}
             >
               Create Employee

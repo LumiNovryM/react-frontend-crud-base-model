@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toast";
 import type { Metadata } from "next";
 import { Poppins, Geist } from "next/font/google";
 import "./globals.css";
@@ -26,7 +27,9 @@ export default function RootLayout({
       lang="en"
       className={cn("h-full", "antialiased", poppins.variable, "font-sans", geist.variable)}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"> <Toaster>
+          {children}
+        </Toaster></body>
     </html>
   );
 }
