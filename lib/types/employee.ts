@@ -21,3 +21,17 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
 }
+
+export interface CreateEmployeePayload {
+  nik: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  gender: string;
+  placeOfBirth: string;
+  dateOfBirth: string;
+  email: string;
+  phone: string;
+  jobTitleId: number;
+  hireDate: string;
+}
